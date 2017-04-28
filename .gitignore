@@ -1,0 +1,9 @@
+**/.terraform/*
+**/*.tfstate*
+terraform/files/id_rsa
+terraform/files/id_rsa.pub
+crash.log
+dcos_generate_config*.sh
+*.tfvars
+packer/tests/__pycache__
+packer/ansible/default.retry

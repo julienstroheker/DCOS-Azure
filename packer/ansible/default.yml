@@ -1,0 +1,14 @@
+---
+- hosts: all
+  sudo: yes
+  vars:
+    ansible_python_interpreter: /usr/share/oem/python/bin/python
+  tasks:
+    - name: Add nogroup group
+      group:
+        name: nogroup
+        state: present
+    - name: Add dcos-bootstrap user
+      user:
+        name: dcos-bootstrap
+        comment: "DC/OS Bootstrap User"

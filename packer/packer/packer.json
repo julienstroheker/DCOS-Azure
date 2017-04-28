@@ -1,0 +1,101 @@
+{
+    "variables": {
+      "location": "eastus",
+      "tests_directory":"../tests/",
+      "resource_name":"packdcos3"
+  },
+  "builders": [
+    {
+      "type": "azure-arm",
+
+      "client_id": "{{env `ARM_CLIENT_ID`}}",
+      "client_secret": "{{env `ARM_CLIENT_SECRET`}}",
+      "resource_group_name": "packer",
+      "storage_account": "packerartifacts",
+      "subscription_id": "{{env `ARM_SUBSCRIPTION_ID`}}",
+      "tenant_id": "{{env `ARM_TENANT_ID`}}",
+
+      "capture_container_name": "images",
+      "capture_name_prefix": "coreosbaked",
+
+      "os_type": "Linux",
+      "image_publisher": "CoreOS",
+      "image_offer": "CoreOS",
+      "image_sku": "Stable",
+
+      "temp_compute_name":"{{user `resource_name`}}",
+
+      "location": "{{user `location`}}",
+      "vm_size": "Standard_D2_V2"
+    }
+    ],
+    "provisioners": [
+    {
+      "type": "shell-local",
+      "command":"sleep 20"
+    },
+    {
+      "type": "ansible",
+      "playbook_file": "../ansible/default.yml",
+      "user":"core",
+      "sftp_command":"/usr/libexec/openssh/sftp-server -e",
+      "extra_arguments": [
+          "-v"
+        ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo sync"
+      ]
+    },
+    {
+      "type": "shell-local",
+      "command": "mkdir .tmp_ssh; cd .tmp_ssh; rm ./id_rsa; ssh-keygen -b 2048 -t rsa -f ./id_rsa -q -N ''; echo 'StrictHostKeyChecking no' >> ./config;echo 'IdentityFile .tmp_ssh/id_rsa' >> ./config;echo 'UserKnownHostsFile /dev/null' >> ./config;"
+    },
+    {
+      "type": "file",
+      "source": "./.tmp_ssh/id_rsa.pub",
+      "destination": "/tmp/testinfra_id_rsa.pub"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo useradd -m -s /bin/bash testinfra",
+        "sudo sh -c 'echo \"testinfra ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/testinfra'",
+        "sudo su - testinfra -c 'cat /tmp/testinfra_id_rsa.pub > ~/.ssh/authorized_keys'",
+        "sudo su - testinfra -c 'chmod 0700 ~/.ssh; chmod 0600 ~/.ssh/authorized_keys'"
+      ]
+    },
+    {
+      "type": "shell-local",
+      "command": "testinfra {{user `tests_directory`}} --connection=ssh --hosts=testinfra@{{user `resource_name`}}.{{user `location`}}.cloudapp.azure.com --ssh-config=.tmp_ssh/config --sudo"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo rm /etc/sudoers.d/testinfra",
+        "sudo userdel -r testinfra",
+        "sudo rm /tmp/testinfra_id_rsa.pub"
+      ]
+    },
+    {
+      "type": "shell-local",
+      "command": "rm -rf ./.tmp_ssh; mkdir ./.tmp_ssh; touch ./.tmp_ssh/id_rsa.pub"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo sync"
+      ]
+    },
+    {
+      "execute_command": "chmod +x {{ .Path }}; {{ .Vars }} sudo -E sh '{{ .Path }}'",
+      "inline": [
+        "/usr/share/oem/python/bin/python /usr/share/oem/bin/waagent -force -deprovision+user && export HISTSIZE=0 && sync"
+      ],
+      "inline_shebang": "/bin/sh -x",
+      "type": "shell"
+    }
+    ]
+}
