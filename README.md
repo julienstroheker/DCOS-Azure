@@ -7,6 +7,8 @@ This script allow you to deploy a DC/OS cluster in best practices on Microsoft A
 
 A Section about Packer is in progress
 
+You can watch [this online meetup](https://youtu.be/ifNitKh-L0o?t=2231) about Terraform and DC/OS in general where I presented this project.
+
 # Terraform Usage #
 
 #### WARNING: Be sure that you are not overriding existing Azure resources that are in use. This Terraform process will create a resource group to contain all dependent resources within. This makes it easy to cleanup.
