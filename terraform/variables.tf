@@ -4,6 +4,10 @@ variable "resource_suffix" {}
 
 variable "dcos_download_url" {}
 
+variable "install_script_url" {}
+
+variable "bootstrap_script_url" {}
+
 variable "private_key_path" {}
 
 variable "public_key_path" {}

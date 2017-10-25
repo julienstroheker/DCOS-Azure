@@ -83,10 +83,11 @@ resource "azurerm_availability_set" "master" {
 }
 
 resource "azurerm_storage_account" "master" {
-  name                = "masterstorage${var.resource_suffix}"
-  resource_group_name = "${azurerm_resource_group.dcos.name}"
-  location            = "${azurerm_resource_group.dcos.location}"
-  account_type        = "Standard_LRS"
+  name                     = "masterstorage${var.resource_suffix}"
+  resource_group_name      = "${azurerm_resource_group.dcos.name}"
+  location                 = "${azurerm_resource_group.dcos.location}"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
 }
 
 resource "azurerm_virtual_machine" "master" {
