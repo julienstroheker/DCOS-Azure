@@ -19,7 +19,7 @@ You can watch [this online meetup](https://youtu.be/ifNitKh-L0o?t=2231) about Te
 
 * It is assumed that you have a functioning Azure client installed. You can do so [here](https://github.com/Azure/azure-cli)
 
-* Install [Terraform](https://www.terraform.io/downloads.html) and create credentials for Terraform to access Azure. To do so, you will need to following environment variables :
+* Install [Terraform](https://www.terraform.io/downloads.html) and create credentials for Terraform to access Azure. To do so, you will need to following environment variables:
 
   * ARM_SUBSCRIPTION_ID=<subscription id>
   * ARM_CLIENT_ID=<client id>
@@ -52,8 +52,7 @@ $ az account show
   }
 }
 
-export SUBSCRIPTIONID=`az account show --output tsv | cut -f2`
-
+export ARM_SUBSCRIPTION_ID=`az account show --output tsv | cut -f2`
 ```
 
 * Create an Azure application 
@@ -61,7 +60,7 @@ export SUBSCRIPTIONID=`az account show --output tsv | cut -f2`
 ```bash
 $ export PASSWORD=`openssl rand -base64 24`
 
-$ az ad app create --display-name dcosterraform--identifier-uris http://docs.mesosphere.com --homepage http://www.mesosphere.com --password $PASSWORD
+$ az ad app create --display-name dcosterraform --identifier-uris http://docs.mesosphere.com --homepage http://www.mesosphere.com --password $PASSWORD
 
 $ unset PASSWORD
 ```
@@ -77,7 +76,7 @@ $ az ad sp create --id $APPID
 * Grant Permissions To Your Application
 
 ```bash
-$ az role assignment create --assignee http://docs.mesosphere.com --role "Owner" --scope /subscriptions/$SUBSCRIPTIONID
+$ az role assignment create --assignee http://docs.mesosphere.com --role "Owner" --scope /subscriptions/$ARM_SUBSCRIPTION_ID
 
 ```
 
@@ -89,7 +88,7 @@ $ az ad app list --display-name dcosterraform
 
 *NOTE: A more detailed overview can be found on the [Terraform Site](https://www.terraform.io/docs/providers/azurerm/index.html)*
 
-## Deploy the Azure infrastructure and DC/OS
+## Deploy the Azure infrastructure and DC/OS ##
 
 * First, review the default configuratiion. Most common options are available in `terraform/dcos/terraform.tfvars`. The full list of available options are in `terraform/dcos/variables.tf`. CoreOS is the default as it has pre-requirements built in.
 
