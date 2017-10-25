@@ -1,9 +1,10 @@
 resource "azurerm_storage_account" "agent_private" {
-  name                = "${substr(sha1(uuid()), 0, 20)}"
-  resource_group_name = "${azurerm_resource_group.dcos.name}"
-  location            = "${azurerm_resource_group.dcos.location}"
-  count               = 5
-  account_type        = "Standard_LRS"
+  name                     = "${substr(sha1(uuid()), 0, 20)}"
+  resource_group_name      = "${azurerm_resource_group.dcos.name}"
+  location                 = "${azurerm_resource_group.dcos.location}"
+  count                    = 5
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
 
   lifecycle {
     ignore_changes = ["name"]

@@ -21,10 +21,11 @@ resource "azurerm_network_interface" "bootstrap" {
 }
 
 resource "azurerm_storage_account" "bootstrap" {
-  name                = "bootstrapstorage${var.resource_suffix}"
-  resource_group_name = "${azurerm_resource_group.dcos.name}"
-  location            = "${azurerm_resource_group.dcos.location}"
-  account_type        = "Standard_LRS"
+  name                     = "bootstrapstorage${var.resource_suffix}"
+  resource_group_name      = "${azurerm_resource_group.dcos.name}"
+  location                 = "${azurerm_resource_group.dcos.location}"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
 }
 
 resource "azurerm_virtual_machine" "bootstrap" {
